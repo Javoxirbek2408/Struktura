@@ -6,11 +6,6 @@ import { formatPrice } from '@/utils';
 import {
   ArrowBigLeft,
   ArrowBigRight,
-  HashIcon,
-  HeartCrackIcon,
-  HeartIcon,
-  Loader,
-  LoaderCircle,
   LucideLoader,
 } from 'lucide-react';
 import { useState } from 'react';
