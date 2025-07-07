@@ -16,14 +16,14 @@ const CartPage = () => {
   return (
     <div className="py-10 container space-y-10">
       {cart?.map((item) => (
-        <div
+        <div 
           key={item.id}
-          className="bg-white pb-4 shadow-md rounded-md border border-gray-200 group"
+          className="bg-white p-2 shadow-md rounded-md border flex  border-gray-200 group"
         >
-          <div className="h-[180px] w-full overflow-hidden">
+          <div className="h-[250px] rounded-md w-full overflow-hidden">
             <img
               src={item?.image}
-              alt=""
+              // alt=""
               className="w-full h-full object-cover group-hover:scale-110 duration-300 transition-transform"
             />
           </div>
@@ -35,7 +35,6 @@ const CartPage = () => {
               <strong>{formatPrice(item.price)}</strong>
               <span>{item.inStock} шт</span>
             </div>
-
             <div className="mt-10 flex justify-between">
               <Button onClick={() => handleOpen(item)}>Delete</Button>
             </div>
