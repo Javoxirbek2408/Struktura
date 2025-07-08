@@ -2,6 +2,7 @@
 import Cart from '@/components/CardPage/Cart';
 import {
   addToCart,
+  clearCart,
   decrementMinus,
   folowProduct,
   incrementPlus,
@@ -17,14 +18,15 @@ import { toast } from 'react-toastify';
 const FollovPage = () => {
   const dispatch = useDispatch();
   const wishlist = useSelector((w) => w.all.followedProducts);
-  const [open, setIsOpen] = useState(false);
-  const [opend, setIsOpend] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const toggleOpen = () => setIsOpen(!open);
-  const toggleOpend = () => setIsOpend(!opend);
+  const [open, setIsOpen] = useState(false); //delete
+  const [opend, setIsOpend] = useState(false); //all delete
+  const [selected, setSelectedd] = useState(null); //delete
+  const toggleOpen = () => setIsOpen(!open); //delete
+
+  const toggleOpend = () => setIsOpend(!opend); //all delete
 
   const handleOpen = (product) => {
-    setSelected(product);
+    setSelectedd(product);
 
     toggleOpen();
   };
@@ -34,10 +36,26 @@ const FollovPage = () => {
     toast.success(`${product.name} added to cart`);
   };
 
-  const handlFollow = (product) => {
-    dispatch(folowProduct(product));
-    toast.success(`${product.name} Added to Follow`);
+  const [followed, setFollowed] = useState([]);
+
+  const handleFollow = (product) => {
+    const isFollowed = followed.some((p) => p.id === product.id);
+
+    if (isFollowed) {
+      setFollowed(followed.filter((p) => p.id !== product.id));
+      toast.success(`${product.name} deleted from Follow`);
+    } else {
+      setFollowed([...followed, product]);
+      toast.success(`${product.name} added to Follow`);
+    }
   };
+
+const handleAllDelete = () => {
+    dispatch(clearCart());
+    toggleOpen();
+    toast.success("Muvaffaqiyatli o'chirildi");
+  };
+
   return (
     <>
       {!wishlist.length ? (
@@ -50,7 +68,7 @@ const FollovPage = () => {
         </div>
       ) : (
         <div className="py-10 container space-y-10">
-          <AlldeleteM open={opend} toggleOpen={toggleOpend} />
+          <AlldeleteM open={opend} toggleOpen={toggleOpend} AlldeleteM={handleAllDelete} />
           <div className="grid grid-cols-3 gap-4">
             {wishlist?.map((item) => (
               <Cart
@@ -64,7 +82,7 @@ const FollovPage = () => {
                 onMInus={() => dispatch(decrementMinus(item.id))}
                 onPlus={() => dispatch(incrementPlus(item.id))}
                 quantity={item.quantity}
-                onFollow={() => handlFollow(item)}
+                onFollow={() => handleFollow(item)}
                 onDelete={() => handleOpen(item)}
               />
             ))}
