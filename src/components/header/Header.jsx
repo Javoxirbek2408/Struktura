@@ -5,6 +5,7 @@ import { logout } from '@/redux/slices/authSlice';
 
 export const Header = () => {
   const cart = useSelector((s) => s.all.cart);
+  const followedProducts = useSelector((s) => s.all.followedProducts);
   const auth = useSelector((s) => s.all.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export const Header = () => {
       dispatch(logout());
       window.location.reload();
     } else {
-      navigate('/auth/signin');
+      navigate('/auth/login');
     }
   };
   return (
@@ -39,6 +40,15 @@ export const Header = () => {
             Cart
             {cart.length !== 0 && (
               <span className="text-red-600">({cart.length})</span>
+            )}
+          </Link>
+          <Link
+            to={'/follow'}
+            className={`text-2xl px-7 font-bold  bg-amber-500 text-white rounded-md  py-2 flex items-center gap-1 $`}
+          >
+            Follow
+            {followedProducts?.length !== 0 && (
+              <span className="text-red-600">({followedProducts?.length})</span>
             )}
           </Link>
         </div>

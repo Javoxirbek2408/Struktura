@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,44 +8,44 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import { LOGIN } from '@/constants';
-import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { login } from '@/redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '@/context/AuthContext';
+import request from '@/services';
+import { toast } from 'react-toastify';
+import { useContext, useState } from 'react';
 
-export const SigninPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm({
-    mode: 'onTouched',
-  });
-  const [visible, setVisible] = useState(false);
-  const dispatch = useDispatch();
+export function LoginForm() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login: LoginFn } = useContext(AuthContext);
+
   const navigate = useNavigate();
-
-  const onSubmit = async (data) => {
+  const userData = {
+    username,
+    password,
+  };
+  const login = async (e) => {
+    setIsLoading(true);
+    e.preventDefault();
     try {
-      const res = await axios.post(LOGIN, data);
-      if (res.data.accessToken || res.data.refreshToken) {
-        dispatch(login({token: res.data.accessToken}));
-        navigate('/');
+      const response = await request.post(
+        'https://dummyjson.com/auth/login',
+        userData
+      );
+      LoginFn(response.data.accessToken);
+      setIsLoading(false);
+      if (response.data.accessToken) {
+        return navigate('/');
       }
-      console.log(res);
     } catch (error) {
-      console.log(error);
-      toast.error('Username yoki password xato');
+      const message =
+        error?.response?.data?.message || 'xato malumot kiritilgan';
+      toast(message);
     }
   };
   return (
-    <div className={cn('flex flex-col gap-6 w-1/3')}>
+    <div className={'flex flex-col gap-6'}>
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -54,21 +54,19 @@ export const SigninPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <form onSubmit={login}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Username</Label>
+                <Label htmlFor="name">User Name</Label>
                 <Input
-                  id="email"
+                  onChange={({ target }) => setUsername(target.value)}
+                  id="name"
                   type="text"
-                  placeholder="m@example.com"
-                  {...register('username', { required: true })}
+                  placeholder="jonh"
+                  required
                 />
-                {errors.username && (
-                  <span className="text-red-600">This field is required</span>
-                )}
               </div>
-              <div className="grid gap-3 relative">
+              <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <a
@@ -79,44 +77,25 @@ export const SigninPage = () => {
                   </a>
                 </div>
                 <Input
+                  onChange={({ target }) => setPassword(target.value)}
                   id="password"
-                  type={visible ? 'text' : 'password'}
+                  type="password"
+                  placeholder="********"
                   required
-                  {...register('password', {
-                    required: true,
-                  })}
                 />
-                {errors.password && (
-                  <span className="text-red-600">This field is required</span>
-                )}
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 translate-y-1"
-                  onClick={() => setVisible(!visible)}
-                >
-                  {visible ? <EyeOff /> : <Eye />}
-                </button>
               </div>
               <div className="flex flex-col gap-3">
-                <Button disabled={!isValid} type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full">
+                  {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
                 <Button variant="outline" className="w-full">
                   Login with Google
                 </Button>
               </div>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{' '}
-              <a href="#" className="underline underline-offset-4">
-                Sign up
-              </a>
-            </div>
           </form>
         </CardContent>
       </Card>
     </div>
   );
-};
-
-export default SigninPage;
+}

@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from '@/layouts';
 import DashboardPage from './pages/dashboard/DashboardPage';
-import ProductPage from './pages/dashboard/ProductPage';
 import AuthLayout from './layouts/AuthLayout';
-import SigninPage from './pages/auth/SigninPage';
+import { LoginForm } from './pages/auth/SigninPage';
 import CartPage from './pages/dashboard/CartPage';
+import FollovPage from './pages/dashboard/FollovPage';
 
 const router = createBrowserRouter([
   {
@@ -16,8 +16,8 @@ const router = createBrowserRouter([
         element: <DashboardPage />,
       },
       {
-        path: '/products',
-        element: <ProductPage />,
+        path: '/follow',
+        element: <FollovPage />,
       },
       {
         path: '/cart',
@@ -30,8 +30,8 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       {
-        path: '/auth/signin',
-        element: <SigninPage />,
+        path: '/auth/login',
+        element: <LoginForm />,
       },
     ],
   },

@@ -1,12 +1,16 @@
 import { Button } from '@/components/button';
+import Cart from '@/components/CardPage/Cart';
+import { Input } from '@/components/ui/input';
 import { CATEGORY } from '@/constants';
 import { useGetData } from '@/hooks/fetch-data';
-import { addToCart } from '@/redux/slices/authSlice';
+import { addToCart, folowProduct } from '@/redux/slices/authSlice';
 import { formatPrice } from '@/utils';
 import {
   ArrowBigLeft,
   ArrowBigRight,
+  // HeartIcon,
   LucideLoader,
+  Search,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -15,14 +19,31 @@ import { toast } from 'react-toastify';
 const DashboardPage = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
   const { data: categoryData, isLoading } = useGetData(CATEGORY, page);
 
-  //cardga qushish
+  // cardga qushish
   const handleToCart = (product) => {
     dispatch(addToCart(product));
     toast.success(`${product.name} added to cart`);
   };
   console.log(page);
+
+  const handlFollow = (product) => {
+    dispatch(folowProduct(product));
+    toast.success(`${product.name} Added to Follow`);
+  };
+  const redLike = () => {
+    // const redd
+  };
+
+  const filteredData = categoryData?.filter(
+    (item) =>
+      item.id.toLowerCase().includes(search.toLowerCase()) ||
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.description.toLowerCase().includes(search.toLowerCase()) ||
+      item.price.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="py-10">
@@ -32,45 +53,47 @@ const DashboardPage = () => {
         </div>
       ) : (
         <div className="container">
-          <div className="grid grid-cols-3 gap-20">
-            {categoryData?.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white pb-4 w-[350px] shadow-md rounded-md border border-gray-200 group"
-              >
-                <div className="h-[180px] w-full overflow-hidden">
-                  <img
-                    src={item?.image}
-                    alt=""
-                    className="w-full h-full object-cover group-hover:scale-110 duration-300 transition-transform"
-                  />
-                </div>
-                <div className="flex flex-col px-4 my-1">
-                  <h3 className="mb-3">{item.name}</h3>
-                  <p className="line-clamp-2 ">{item.description}</p>
-                  <div className="flex items-center justify-between mt-5">
-                    <strong>{formatPrice(item.price)}</strong>
-                    <span>{item.inStock} шт</span>
-                  </div>
+          <div className="relative">
+            <label htmlFor="search">
+              <Search className="absolute left-[320px] top-1.5" />
+            </label>
+            <Input
+              id="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="search"
+              className={'bg-gray-500 w-[300px] '}
+            />
+          </div>
 
-                  <div className="mt-10 flex justify-between">
-                    <Button onClick={() => handleToCart(item)}>
-                      Add To Cart
-                    </Button>
-                    <Button onClick={() => {}}>
-                      <HeartIcon />
-                    </Button>
-                  </div>
-                </div>
-              </div>
+          <div className="grid grid-cols-3 gap-20">
+            {filteredData?.map((item) => (
+              <Cart
+                key={item.id}
+                img={item?.image}
+                name={item.name}
+                price={formatPrice(item.price)}
+                inStock={item.inStock}
+                description={item.description}
+                quantity={item.quantity}
+                onAddToCart={() => handleToCart(item)}
+                onFollow={() => handlFollow(item)}
+              />
             ))}
 
             {/* pagedan gapjga utis */}
           </div>
           <div className="flex justify-center mt-6 gap-10">
             <button
-              className="cursor-pointer px-4 py-2 bg-black text-white rounded-md font-bold text-xl"
-              onClick={() => setPage(page - 1)}
+              disabled={page <= 0}
+              className={`px-4 py-2 rounded-md font-bold text-xl ${
+                page <= 0
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-black text-white'
+              }`}
+              onClick={() => {
+                if (page > 1) setPage(page - 1);
+              }}
             >
               <ArrowBigLeft />
             </button>

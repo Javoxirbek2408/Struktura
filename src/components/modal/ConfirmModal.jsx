@@ -12,10 +12,16 @@ import { toast } from 'react-toastify';
 export const ConfirmModal = ({ open, toggleOpen, item }) => {
   const dispatch = useDispatch();
   const handleDelete = () => {
+    if (!item || !item.id) {
+      toast.error("O'chirish uchun element topilmadi");
+      return;
+    }
+
     dispatch(deleteProduct(item.id));
     toggleOpen();
     toast.success("Muvaffaqiyatli o'chirildi");
   };
+
   return (
     <AlertDialog open={open} onOpenChange={toggleOpen}>
       <AlertDialogContent>
@@ -29,7 +35,12 @@ export const ConfirmModal = ({ open, toggleOpen, item }) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <button onClick={toggleOpen} className='mr-2 px-3 py-1 bg-black text-white'>Cancel</button>
+          <button
+            onClick={toggleOpen}
+            className="mr-2 px-3 py-1 bg-black text-white"
+          >
+            Cancel
+          </button>
           <button
             className="bg-red-600 text-white rounded-md px-4 py-2 font-bold"
             onClick={handleDelete}

@@ -9,11 +9,11 @@ export const request = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// request.interceptors.request.use((config) => {
-//   const token = Cookies.get(TOKEN);
-//   if (token) config.headers.Authorization = `Bearer ${token}`;
-//   return config;
-// });
+request.interceptors.request.use((config) => {
+  const token = Cookies.get(TOKEN);
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 request.interceptors.response.use(
   (res) => res,
