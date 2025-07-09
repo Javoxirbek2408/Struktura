@@ -2,7 +2,7 @@
 import Cart from '@/components/CardPage/Cart';
 import {
   addToCart,
-  clearCart,
+  clearWishlist,
   decrementMinus,
   folowProduct,
   incrementPlus,
@@ -39,26 +39,19 @@ const FollovPage = () => {
   const [followed, setFollowed] = useState([]);
 
   const handleFollow = (product) => {
-    const isFollowed = followed.some((p) => p.id === product.id);
-
-    if (isFollowed) {
-      setFollowed(followed.filter((p) => p.id !== product.id));
-      toast.success(`${product.name} deleted from Follow`);
-    } else {
-      setFollowed([...followed, product]);
-      toast.success(`${product.name} added to Follow`);
-    }
+    dispatch(folowProduct(product));
+    toast.success(`${product.name} added to cart`)
   };
 
-const handleAllDelete = () => {
-    dispatch(clearCart());
+  const handleAllDelete = () => {
+    dispatch(clearWishlist());
     toggleOpen();
     toast.success("Muvaffaqiyatli o'chirildi");
   };
 
   return (
     <>
-      {!wishlist.length ? (
+      {!wishlist?.length ? (
         <div className="!h-[calc(100vh- 104px)] w-full mt-30 flex items-center justify-center">
           <img
             className="w-[400px]"
@@ -68,7 +61,11 @@ const handleAllDelete = () => {
         </div>
       ) : (
         <div className="py-10 container space-y-10">
-          <AlldeleteM open={opend} toggleOpen={toggleOpend} AlldeleteM={handleAllDelete} />
+          <AlldeleteM
+            open={opend}
+            toggleOpen={toggleOpend}
+            aaldete={handleAllDelete}
+          />
           <div className="grid grid-cols-3 gap-4">
             {wishlist?.map((item) => (
               <Cart

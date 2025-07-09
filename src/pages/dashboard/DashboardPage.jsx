@@ -8,12 +8,11 @@ import { formatPrice } from '@/utils';
 import {
   ArrowBigLeft,
   ArrowBigRight,
-  // HeartIcon,
   LucideLoader,
   Search,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const DashboardPage = () => {
@@ -29,14 +28,20 @@ const DashboardPage = () => {
   };
   console.log(page);
 
-  const handlFollow = (product) => {
-    dispatch(folowProduct(product));
-    toast.success(`${product.name} Added to Follow`);
-  };
-  const redLike = () => {
-    // const redd
-  };
+  const [followed, setFollowed] = useState([]);
 
+  const handleFollow = (product) => {
+    const isFollowed = followed.some((p) => p.id === product.id);
+    dispatch(folowProduct(product));
+    if (isFollowed) {
+      setFollowed(followed.filter((p) => p.id !== product.id));
+      toast.success(`${product.name} deleted from Follow`);
+    } else {
+      setFollowed([...followed, product]);
+      toast.success(`${product.name} added to Follow`);
+    }
+  };
+``
   const filteredData = categoryData?.filter(
     (item) =>
       item.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -44,6 +49,8 @@ const DashboardPage = () => {
       item.description.toLowerCase().includes(search.toLowerCase()) ||
       item.price.toLowerCase().includes(search.toLowerCase())
   );
+  const inWishpr = useSelector((s) => s.all.followedProducts);
+  console.log(inWishpr);
 
   return (
     <div className="py-10">
@@ -77,7 +84,8 @@ const DashboardPage = () => {
                 description={item.description}
                 quantity={item.quantity}
                 onAddToCart={() => handleToCart(item)}
-                onFollow={() => handlFollow(item)}
+                onFollow={() => handleFollow(item)}
+                iswished={inWishpr?.find((i) => i.id === item.id)}
               />
             ))}
 

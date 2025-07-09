@@ -9,6 +9,7 @@ export const Header = () => {
   const auth = useSelector((s) => s.all.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleGoLogin = () => {
     if (auth) {
       dispatch(logout());
@@ -17,6 +18,7 @@ export const Header = () => {
       navigate('/auth/login');
     }
   };
+  
   return (
     <header className="bg-body-color text-white py-7 ">
       <div className="container flex justify-between items-center">
@@ -34,7 +36,7 @@ export const Header = () => {
             {auth ? 'Logout' : 'Login'}
           </Button>
           <Link
-            to={'/cart'}
+            to={auth ? '/cart' : '/auth/login'}
             className={`text-2xl px-7 font-bold  bg-amber-500 text-white rounded-md  py-2 flex items-center gap-1 $`}
           >
             Cart
@@ -43,7 +45,7 @@ export const Header = () => {
             )}
           </Link>
           <Link
-            to={'/follow'}
+            to={auth ? '/follow' : '/auth/login'}
             className={`text-2xl px-7 font-bold  bg-amber-500 text-white rounded-md  py-2 flex items-center gap-1 $`}
           >
             Follow

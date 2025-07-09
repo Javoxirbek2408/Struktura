@@ -2,8 +2,10 @@ import { Button } from '@/components/button';
 // import { formatPrice } from '@/utils';
 import { HeartIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 // import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Cart = ({
   img,
@@ -18,21 +20,22 @@ const Cart = ({
   onPlus,
   quantity,
   item,
+  iswished
 }) => {
   const location = useLocation();
   const [liked, setLiked] = useState(false);
 
-  const handleClick = () => {
-    const newLiked = !liked;
-    setLiked(newLiked);
-    onFollow(item);
-  };
+
+  // const handleClick = () => {
+  //   const newLiked = !liked;
+  //   setLiked(newLiked);
+  //   onFollow(item);
+  // };
 
   const handlFollow = (product) => {
     const newLiked = !liked;
     setLiked(newLiked);
     onFollow(item);
-    toast.success(`${product.name} Added to Follow`);
   };
 
   return (
@@ -93,7 +96,7 @@ const Cart = ({
             {location.pathname !== '/follow' && (
               <Button className={'bg-gray-300'} onClick={handlFollow}>
                 <HeartIcon
-                  className={liked ? 'text-red-500 fill-red-500' : ''}
+                  className={iswished ? 'text-red-500 fill-red-500' : ''}
                 />
               </Button>
             )}

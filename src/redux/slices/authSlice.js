@@ -7,7 +7,6 @@ const authSlice = createSlice({
   initialState: {
     auth: Cookies.get(TOKEN) ? true : false,
     cart: [],
-    // wishlist: [],
     followedProducts: [],
   },
   reducers: {
@@ -31,14 +30,16 @@ const authSlice = createSlice({
     clearCart: (state) => {
       state.cart = [];
     },
+    clearWishlist: (state) => {
+      state.followedProducts = [];
+    },
     folowProduct: (state, action) => {
       const existing = state.followedProducts.find(
         (el) => el.id === action.payload.id
       );
       if (existing) {
-        state.followedProducts = state.followedProducts.filter(
-          (el) => el.id !== action.payload.id
-        );
+        const existing = state.followedProducts.filter((el) => el.id !== action.payload.id);
+        state.followedProducts = existing
       } else {
         state.followedProducts.push(action.payload);
       }
@@ -55,7 +56,6 @@ const authSlice = createSlice({
         }
       }
     },
-
     decrementMinus: (state, action) => {
       const item = state.cart.find((el) => el.id === action.payload);
       if (item && item.quantity > 1) {
@@ -64,7 +64,6 @@ const authSlice = createSlice({
         state.cart = state.cart.filter((el) => el.id !== action.payload);
       }
     },
-
     deleteProduct: (state, action) => {
       state.cart = state.cart.filter((el) => el.id !== action.payload);
       state.followedProducts = state.followedProducts.filter(
@@ -77,6 +76,7 @@ const authSlice = createSlice({
 export const {
   login,
   logout,
+  clearWishlist,
   addToCart,
   deleteProduct,
   folowProduct,

@@ -12,14 +12,10 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button } from '../button';
 
-const AlldeleteM = ({ open, toggleOpen  }) => {
+const AlldeleteM = ({ open, toggleOpen ,aaldete  }) => {
   const dispatch = useDispatch();
 
-  const handleAllDelete = () => {
-    dispatch(clearCart());
-    toggleOpen();
-    toast.success("Muvaffaqiyatli o'chirildi");
-  };
+
 
   return (
     <AlertDialog open={open} onOpenChange={toggleOpen}>
@@ -41,7 +37,7 @@ const AlldeleteM = ({ open, toggleOpen  }) => {
           </Button>
           <Button
             className="bg-red-600  text-white rounded-md px-4 py-2 font-bold hover:bg-red-700 transition"
-            onClick={handleAllDelete}
+            onClick={aaldete}
           >
             Ha, o'chir
           </Button>

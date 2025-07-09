@@ -2,6 +2,7 @@
 import Cart from '@/components/CardPage/Cart';
 import {
   addToCart,
+  clearCart,
   decrementMinus,
   folowProduct,
   incrementPlus,
@@ -17,6 +18,7 @@ import { toast } from 'react-toastify';
 const CartPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((s) => s.all.cart);
+  const inWishpr = useSelector((s) => s.all.followedProducts);
   const [open, setIsOpen] = useState(false);
   const [opend, setIsOpend] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -27,6 +29,12 @@ const CartPage = () => {
   const handleOpen = (product) => {
     setSelected(product);
     toggleOpen();
+  };
+
+  const handleAllDelete = () => {
+    dispatch(clearCart());
+    toggleOpen();
+    toast.success("Muvaffaqiyatli o'chirildi");
   };
 
   const handleToCart = (product) => {
@@ -67,7 +75,7 @@ const CartPage = () => {
           <AlldeleteM
             open={opend}
             toggleOpen={toggleOpend}
-            alldelete={() => handleAllDelete()}
+            aaldete={() => handleAllDelete()}
           />
           <div className="grid grid-cols-3 gap-4">
             {cart?.map((item) => (
@@ -84,6 +92,7 @@ const CartPage = () => {
                 quantity={item.quantity}
                 onFollow={() => handleFollow(item)}
                 onDelete={() => handleOpen(item)}
+                iswished={inWishpr?.find((i) => i.id === item.id)}
               />
             ))}
           </div>

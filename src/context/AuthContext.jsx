@@ -30,9 +30,10 @@ const AuthProvider = ({ children }) => {
     setToken(null);
     setIsAuthenticated(false);
   };
+  
 
   return (
-    <AuthContext.Provider
+    <AuthContext.Provider 
       value={{ token, login, logOut, isAuthenticated, loading }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -8,44 +8,44 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '@/context/AuthContext';
-import request from '@/services';
+import { Button } from '@/components/ui/button';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { useContext, useState } from 'react';
+import axios from 'axios';
+import { LOGIN } from '@/constants';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { login } from '@/redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
 
-export function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login: LoginFn } = useContext(AuthContext);
-
+export const SigninPage = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    mode: 'onTouched',
+  });
+  const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userData = {
-    username,
-    password,
-  };
-  const login = async (e) => {
-    setIsLoading(true);
-    e.preventDefault();
+
+  const onSubmit = async (data) => {
     try {
-      const response = await request.post(
-        'https://dummyjson.com/auth/login',
-        userData
-      );
-      LoginFn(response.data.accessToken);
-      setIsLoading(false);
-      if (response.data.accessToken) {
-        return navigate('/');
+      const res = await axios.post(LOGIN, data);
+      if (res.data.accessToken || res.data.refreshToken) {
+        dispatch(login({token: res.data.accessToken}));
+        navigate('/');
       }
+      console.log(res);
     } catch (error) {
-      const message =
-        error?.response?.data?.message || 'xato malumot kiritilgan';
-      toast(message);
+      console.log(error);
+      toast.error('Username yoki password xato');
     }
   };
   return (
-    <div className={'flex flex-col gap-6'}>
+    <div className={cn('flex flex-col gap-6 w-[80%] md:w-1/2 lg:w-1/3')}>
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -54,42 +54,47 @@ export function LoginForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={login}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="name">User Name</Label>
+                <Label htmlFor="email">Username</Label>
                 <Input
-                  onChange={({ target }) => setUsername(target.value)}
-                  id="name"
+                  id="email"
                   type="text"
-                  placeholder="jonh"
-                  required
+                  placeholder="m@example.com"
+                  {...register('username', { required: true })}
                 />
+                {errors.username && (
+                  <span className="text-red-600">This field is required</span>
+                )}
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-3 relative">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
                 </div>
-                <Input
-                  onChange={({ target }) => setPassword(target.value)}
+                <div className='relative'>
+                  <Input
                   id="password"
-                  type="password"
-                  placeholder="********"
+                  type={visible ? 'text' : 'password'}
                   required
-                />
+                  {...register('password', {
+                    required: true,
+                  })}
+                /><button
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  onClick={() => setVisible(!visible)}
+                >
+                  {visible ? <EyeOff /> : <Eye />}
+                </button>
+                </div>
+                {errors.password && (
+                  <span className="text-red-600">This field is required</span>
+                )}
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  {isLoading ? 'Logging in...' : 'Login'}
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Login with Google
+                <Button disabled={!isValid} type="submit" className="w-full">
+                  Login
                 </Button>
               </div>
             </div>
@@ -98,4 +103,5 @@ export function LoginForm() {
       </Card>
     </div>
   );
-}
+};
+
